@@ -1,0 +1,70 @@
+{
+  "name": "tammy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Slack agent that answers customers from your product docs and takes their problem reports to Prepcook.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "tammy": "dist/cli.js"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "tsc -p tsconfig.build.json && node dist/index.js",
+    "test": "vitest run",
+    "lint": "eslint . --max-warnings 0 && tsc --noEmit",
+    "format": "prettier . --write",
+    "index": "tsx src/cli.ts index",
+    "tammy": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.303",
+    "@anthropic-ai/sdk": "^0.135.0",
+    "@slack/bolt": "^4.7.3",
+    "@xenova/transformers": "^2.17.2",
+    "better-sqlite3": "^12.11.1",
+    "node-html-parser": "^9.0.4",
+    "smol-toml": "^1.9.1",
+    "sqlite-vec": "^0.1.9",
+    "tinyglobby": "^0.2.17",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^22.19.0",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.71.2",
+    "unpdf": "^1.9.0",
+    "vitest": "^3.2.7"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.13.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild",
+      "onnxruntime-node",
+      "protobufjs",
+      "sharp"
+    ],
+    "ignoredOptionalDependencies": [
+      "@anthropic-ai/claude-agent-sdk-darwin-arm64",
+      "@anthropic-ai/claude-agent-sdk-darwin-x64",
+      "@anthropic-ai/claude-agent-sdk-linux-arm64",
+      "@anthropic-ai/claude-agent-sdk-linux-arm64-musl",
+      "@anthropic-ai/claude-agent-sdk-linux-x64",
+      "@anthropic-ai/claude-agent-sdk-linux-x64-musl",
+      "@anthropic-ai/claude-agent-sdk-win32-arm64",
+      "@anthropic-ai/claude-agent-sdk-win32-x64"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+Tammy
+Copyright 2026 Nick Wisehart
+
+Tammy is a Slack agent that answers customers from a product's documentation
+and takes their problem reports to Prepcook
+(https://github.com/nwisehart/prepcook). It talks to Prepcook only through
+Prepcook's documented card API and webhook notifications, and contains no
+Prepcook code.
+
+Licensed under the Apache License, Version 2.0; see LICENSE.

@@ -1,0 +1,143 @@
+# Tammy's configuration. Copy it to tammy.toml and fill in the channels.
+# Relative paths resolve against the directory this file is in.
+#
+# Secrets never go in this file. Tammy reads these six from the environment,
+# or from the KEY=VALUE file named by secrets_file (mode 0600); the
+# environment wins when both have one:
+#   TAMMY_SLACK_BOT_TOKEN       the bot token, xoxb-…
+#   TAMMY_SLACK_APP_TOKEN       the app-level token for Socket Mode, xapp-…
+#   TAMMY_SLACK_SIGNING_SECRET  the app's signing secret (optional in Socket Mode)
+#   ANTHROPIC_API_KEY           for Claude through the API (provider = "api")
+#   PREPCOOK_API_TOKEN          Prepcook's PREPCOOK_API_TOKEN, for the card API
+#   TAMMY_WEBHOOK_SECRET        the secret of Prepcook's webhook target for Tammy
+
+# Where Tammy keeps her SQLite file (tammy.db: the menu index, orders,
+# conversations) and the downloaded embedding model (models/).
+data_dir = "data"
+
+# debug, info, warn or error. TAMMY_LOG_LEVEL sets it when this is absent.
+log_level = "info"
+
+# The KEY=VALUE secrets file. TAMMY_SECRETS_FILE overrides it.
+secrets_file = "~/.config/tammy/secrets.env"
+
+[slack]
+# Channels where customers talk to Tammy. She answers when @-mentioned there,
+# then every reply in that thread, until someone on the team writes in it.
+customer_channels = ["C0CUSTOMERS"]
+
+# Channels the team works in. Everyone in them counts as the team (internal),
+# and Tammy answers @-mentions there too.
+internal_channels = ["C0SUPPORTTEAM"]
+
+# Slack user ids that count as the team wherever they write.
+internal_users = []
+
+# Where Tammy tells the team about new orders and finished reports. Usually
+# one of the internal channels; leave empty to post nothing there.
+notify_channel = "C0SUPPORTTEAM"
+
+# Whether Tammy answers direct messages.
+answer_dms = true
+
+[brain]
+# The product, as customers call it. Tammy uses it in her answers.
+product = "Pantry"
+
+# How Tammy reaches Claude:
+#   "api"   the Anthropic API, with ANTHROPIC_API_KEY.
+#   "seat"  a Claude subscription signed in on this host with `claude /login`,
+#           through the `claude` CLI (docs/setup.md#claude-api-key-or-seat).
+# Leave it out and Tammy uses the API when ANTHROPIC_API_KEY is set, else the
+# seat when `claude` is installed and signed in. Naming it is recommended.
+provider = "api"
+
+# For the seat only. The `claude` CLI: a name looked up on PATH, or a path.
+# claude_binary = "claude"
+
+# For the seat only. A login directory of Tammy's own (CLAUDE_CONFIG_DIR), so
+# she does not use the login of whoever runs her. Sign in to it once with
+# `CLAUDE_CONFIG_DIR=~/.config/tammy/claude claude /login`.
+# claude_config_dir = "~/.config/tammy/claude"
+
+# For the seat only. Model turns one message may take: each search or other
+# tool call is one, and the answer another. Default: max_tool_rounds + 2.
+# max_turns = 8
+
+# The Claude model that answers, with either provider. Required in practice:
+# check the model ids your account offers and pin the one you want.
+model = "claude-sonnet-4-5"
+
+# The model that sorts each message into question, problem report or other
+# before the tools are offered. Defaults to `model`; a smaller one is cheaper.
+# classifier_model = "claude-haiku-4-5"
+
+# Longest answer, in tokens (the API; the seat uses the CLI's own limit).
+max_tokens = 1024
+
+# Tool calls (searches, filing, status checks) allowed in one answer.
+max_tool_rounds = 6
+
+[menu]
+# Chunk size and the overlap between consecutive chunks of one section, in
+# tokens (about four characters each). Changing either re-embeds everything
+# on the next `tammy index`.
+chunk_tokens = 500
+overlap_tokens = 60
+
+# Passages retrieved for each search.
+top_k = 5
+
+# The cosine similarity (0 to 1) the best passage must reach. Below it the
+# result is "thin" and Tammy says she does not know.
+min_score = 0.35
+
+# Each source is a local path (a file, a directory or a glob) or a URL to
+# crawl. `tammy index <path>` indexes the paths it is given instead.
+[[menu.sources]]
+path = "../prepcook-demo/docs"
+# File patterns inside a directory. Default: Markdown, text, HTML and PDF.
+# include = ["**/*.md"]
+
+# [[menu.sources]]
+# url = "https://docs.example.com/"
+# # Levels of links to follow from the start page; 0 reads only that page.
+# # Only pages on the same origin are fetched, at most 500.
+# depth = 2
+# # Optional path prefixes the crawl stays within.
+# include = ["/guide/"]
+
+[menu.embeddings]
+# The local sentence model (Anthropic has no embeddings API). `tammy index`
+# downloads it once into <data_dir>/models; searching never goes online.
+# "builtin:hash" needs no download but matches on shared words rather than
+# meaning: for trying Tammy out offline and for CI, not for customers.
+# Changing the model rebuilds the index on the next `tammy index`.
+model = "Xenova/all-MiniLM-L6-v2"
+
+# Use the 8-bit quantised weights (smaller, a little less precise).
+quantized = true
+
+# A directory already holding the model's files (<local_dir>/<model>/…), for
+# machines that cannot download it.
+# local_dir = "/opt/models"
+
+[kitchen]
+# Prepcook's server.
+url = "http://localhost:4100"
+
+# The board investigations are filed on. Unset: Prepcook's
+# orchestrator.default_board, else its first board.
+# board = "7d0c6a0e-0000-4000-8000-000000000001"
+
+# Retries for a call that failed without reaching the board, and how long to
+# wait for an answer.
+retries = 3
+timeout_secs = 20
+
+[webhook]
+# Where Tammy listens for Prepcook's events. Prepcook's webhook target
+# points at http://<host>:<port><path>.
+host = "127.0.0.1"
+port = 3978
+path = "/prepcook/webhook"

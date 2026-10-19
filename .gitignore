@@ -1,0 +1,8 @@
+node_modules/
+dist/
+data/
+coverage/
+tammy.toml
+*.env
+!.env.example
+.DS_Store
